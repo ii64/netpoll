@@ -22,7 +22,7 @@ import (
 )
 
 // IOURing create new io_uring instance with Setup Options
-func IOURing(entries uint32, ops ...setupOp) (u *URing, err error) {
+func IOURing(entries uint32, ops ...SetupOpt) (u *URing, err error) {
 	params := &ringParams{}
 	for _, op := range ops {
 		op(params)
@@ -132,7 +132,6 @@ func (u *URing) WaitCQEs(nr uint32, timeout time.Duration) (*URingCQE, error) {
 		return u.WaitCQEsNew(nr, timeout)
 	}
 	toSubmit, err := u.submitTimeout(timeout)
-
 	if toSubmit < 0 {
 		return nil, err
 	}

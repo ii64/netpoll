@@ -110,14 +110,14 @@ const (
 	IORING_FEAT_LINKED_FILE
 )
 
-// setupOp provide options for io_uring instance when building
-type setupOp func(params *ringParams)
+// SetupOpt provide options for io_uring instance when building
+type SetupOpt func(params *ringParams)
 
 // ------------------------------------------ implement io_uring_setup ------------------------------------------
 
 // IOPoll performs busy-waiting for an I/O completion, as opposed to
 // getting notifications via an asynchronous IRQ (Interrupt Request)
-func IOPoll() setupOp {
+func IOPoll() SetupOpt {
 	return func(params *ringParams) {
 		params.flags |= IORING_SETUP_IOPOLL
 	}
@@ -125,7 +125,7 @@ func IOPoll() setupOp {
 
 // SQPoll creates a kernel thread to perform submission queue polling,
 // when this flag is specified.
-func SQPoll(idle time.Duration) setupOp {
+func SQPoll(idle time.Duration) SetupOpt {
 	return func(params *ringParams) {
 		params.flags |= IORING_SETUP_SQPOLL
 		params.sqThreadIdle = uint32(idle.Milliseconds())
@@ -134,7 +134,7 @@ func SQPoll(idle time.Duration) setupOp {
 
 // SQAff will binds the poll thread to the cpu set in the sq_thread_cpu field of the struct ringParams if it is specified.
 // This flag is only meaningful when IORING_SETUP_SQPOLL is specified.
-func SQAff(cpu uint32) setupOp {
+func SQAff(cpu uint32) SetupOpt {
 	return func(params *ringParams) {
 		params.flags |= IORING_SETUP_SQ_AFF
 		params.sqThreadCPU = cpu
@@ -142,21 +142,21 @@ func SQAff(cpu uint32) setupOp {
 }
 
 // CQSize creates the CQ with struct ringParams.cqes.
-func CQSize(sz uint32) setupOp {
+func CQSize(sz uint32) SetupOpt {
 	return func(params *ringParams) {
 		params.flags |= IORING_SETUP_CQSIZE
 		params.cqEntries = sz
 	}
 }
 
-func AttachWQ(fd uint32) setupOp {
+func AttachWQ(fd uint32) SetupOpt {
 	return func(params *ringParams) {
 		params.flags |= IORING_SETUP_ATTACH_WQ
 		params.wqFD = fd
 	}
 }
 
-func URingDisabled() setupOp {
+func URingDisabled() SetupOpt {
 	return func(params *ringParams) {
 		params.flags |= IORING_SETUP_R_DISABLED
 	}

@@ -19,9 +19,9 @@ package netpoll
 import "github.com/cloudwego/netpoll/uring"
 
 // TODO: init uringPoll
-func openIOURingPoll() *uringPoll {
+func openIOURingPoll(entries uint32, opts ...uring.SetupOpt) *uringPoll {
 	poll := new(uringPoll)
-	ring, err := IOURing(0)
+	ring, err := uring.IOURing(entries, opts...)
 	if err != nil {
 		panic(err)
 	}
