@@ -39,6 +39,7 @@ type eventsArg struct {
 // getCQE implements URing
 func (u *URing) getCQE(data getData) (cqe *URingCQE, err error) {
 	var looped = false
+	var ret uint
 	for {
 		var needEnter bool
 		var flags, nrAvail uint32
@@ -76,10 +77,7 @@ func (u *URing) getCQE(data getData) (cqe *URingCQE, err error) {
 			flags |= IORING_ENTER_REGISTERED_RING
 		}
 
-		// TODO: Add println to make timer expired
-		println("SysEnter in")
-		ret, err := SysEnter(u.fd, data.submit, data.waitNr, flags, data.arg, data.sz)
-		println("SysEnter out")
+		ret, err = SysEnter(u.fd, data.submit, data.waitNr, flags, data.arg, data.sz)
 		if err != nil {
 			break
 		}
